@@ -6,14 +6,27 @@ This version follows a strict, professional flow:
 2. Clicking **Explore Platform** opens read-only preview mode (`explore.html`).
 3. Full feature access is only after **Login** (`login.html`).
 
-## Step 1 (Future-safe Foundation) ✅
+## Stage 1 ✅ (Future-safe Foundation)
 
-To avoid future deployment and security issues, this repository now uses a safer baseline:
+- `.gitignore` added for env files/logs/build artifacts.
+- `.env.example` added for deployment clarity.
+- Runtime config injection pattern introduced for Supabase.
 
-- `.gitignore` added for env files, logs, build outputs, and editor artifacts.
-- `.env.example` added so config expectations are explicit.
-- `backend/supabaseClient.js` no longer stores real key placeholders in code logic.
-- Supabase config must be injected at runtime via:
+## Stage 2 ✅ (Backend-ready Auth + Data Wiring)
+
+Stage 2 starts backend integration without breaking local fallback mode:
+
+- New `js/api.js` service layer:
+  - password login/register (Supabase if configured; local fallback otherwise)
+  - Google OAuth start (Supabase OAuth flow)
+  - course catalog sync from Supabase
+  - course publish + creator verification submission to Supabase
+- `js/login.js`, `js/register.js`, `js/upload.js`, `js/creator.js`, `js/dashboard.js` now use the API layer
+- duplicated legacy `js/auth.js` removed to avoid split auth logic
+
+### Runtime config injection
+
+Inject before scripts (or in a shared head include):
 
 ```html
 <script>
@@ -24,31 +37,15 @@ To avoid future deployment and security issues, this repository now uses a safer
 </script>
 ```
 
-This keeps secrets/config out of committed code and reduces production mistakes.
+### Recommended Supabase tables for Stage 2
+
+- `courses(id,title,description,module_count,time_cost,micro_price,video_url,is_active,created_at)`
+- `creator_verifications(user_id,full_name,cv_url,certificate_url,demo_video_url,status,created_at)`
 
 ## Access Model
 
-- **Public:**
-  - `index.html` (premium landing)
-  - `explore.html` (read-only)
-  - `login.html`
-  - `register.html` (includes Google login placeholder)
-- **Protected (login required):**
-  - `creator-verification.html`
-  - `course-upload.html`
-  - `viewer-dashboard.html`
-  - `payment.html`
-  - `profile.html`
-
-## JS Modules
-
-- `js/session.js` → auth session storage
-- `js/guard.js` → protected-route guard + logout
-- `js/login.js` → login form logic
-- `js/register.js` → register + Google placeholder action
-- `js/state.js` → shared app state
-- `js/upload.js`, `js/dashboard.js`, `js/creator.js`, `js/profile.js` → feature pages
-- `backend/timeCreditService.js` → time-credit rules
+- **Public:** `index.html`, `explore.html`, `login.html`, `register.html`
+- **Protected:** `creator-verification.html`, `course-upload.html`, `viewer-dashboard.html`, `payment.html`, `profile.html`
 
 ## Local Run
 
@@ -56,5 +53,4 @@ This keeps secrets/config out of committed code and reduces production mistakes.
 python3 -m http.server 4173
 ```
 
-Open:
-- `http://localhost:4173/index.html`
+Open `http://localhost:4173/index.html`

@@ -1,4 +1,5 @@
 import { enrollInCourse, consumeTimeForUnlock, completeModule } from "../backend/timeCreditService.js";
+import { syncCatalogFromBackend } from "./api.js";
 import { getState, setState } from "./state.js";
 
 const ui = {
@@ -89,4 +90,9 @@ setInterval(() => {
   render();
 }, 15000);
 
-render();
+async function init() {
+  await syncCatalogFromBackend();
+  render();
+}
+
+init();

@@ -1,4 +1,5 @@
-import { isAuthenticated, setAuthSession } from "./session.js";
+import { isAuthenticated } from "./session.js";
+import { loginWithPassword } from "./api.js";
 
 if (isAuthenticated()) {
   window.location.href = "viewer-dashboard.html";
@@ -6,7 +7,7 @@ if (isAuthenticated()) {
 
 const status = document.querySelector("#auth-status");
 
-document.querySelector("#login-form").addEventListener("submit", (event) => {
+document.querySelector("#login-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const data = new FormData(event.target);
   const username = String(data.get("username") || "").trim();
@@ -17,7 +18,14 @@ document.querySelector("#login-form").addEventListener("submit", (event) => {
     return;
   }
 
-  setAuthSession({ username, provider: "password" });
+  status.textContent = "Signing in...";
+  const result = await loginWithPassword(username, password);
+
+  if (!result.ok) {
+    status.textContent = result.message || "Login failed.";
+    return;
+  }
+
   status.textContent = "Login successful. Redirecting...";
   setTimeout(() => {
     window.location.href = "viewer-dashboard.html";
