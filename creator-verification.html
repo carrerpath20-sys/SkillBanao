@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Creator Verification | SkillBanao</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-protected="true">
+    <header class="site-header">
+      <a class="brand" href="index.html">SkillBanao</a>
+      <nav>
+        <a href="creator-verification.html" class="active">Verification</a>
+        <a href="course-upload.html">Course Upload</a>
+        <a href="viewer-dashboard.html">Dashboard</a>
+        <a href="#" id="logout-btn">Logout</a>
+      </nav>
+    </header>
+
+    <main class="container narrow">
+      <section class="card">
+        <h1>Creator Verification</h1>
+        <p>Submit your professional profile. Verification is required before publishing courses.</p>
+        <form id="verification-form" class="form-grid">
+          <label>Full Name <input required name="name" type="text" /></label>
+          <label>CV URL <input required name="cv" type="url" /></label>
+          <label>Certificate URL <input required name="certificate" type="url" /></label>
+          <label>Demo Video URL <input required name="demoVideo" type="url" /></label>
+          <button class="btn primary" type="submit">Submit for Review</button>
+        </form>
+        <p class="status" id="verification-status"></p>
+      </section>
+    </main>
+
+    <script type="module" src="js/guard.js"></script>
+    <script type="module" src="js/creator.js"></script>
+  </body>
+</html>

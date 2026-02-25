@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Viewer Dashboard | SkillBanao</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-protected="true">
+    <header class="site-header">
+      <a class="brand" href="index.html">SkillBanao</a>
+      <nav>
+        <a href="course-upload.html">Course Upload</a>
+        <a href="viewer-dashboard.html" class="active">Dashboard</a>
+        <a href="payment.html">Payments</a>
+        <a href="profile.html">Profile</a>
+        <a href="#" id="logout-btn">Logout</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h1>Viewer Dashboard</h1>
+        <div class="stats">
+          <article><p>Time Credits</p><h3 id="time-balance">0</h3></article>
+          <article><p>Skill Points</p><h3 id="skill-points">0</h3></article>
+          <article><p>Active Courses</p><h3 id="active-courses">0</h3></article>
+        </div>
+        <div class="button-row">
+          <button id="buy-credits" class="btn secondary">Micro-Payment +5 Credits</button>
+          <button id="use-time" class="btn secondary">Use 2 Credits for Early Unlock</button>
+        </div>
+        <p id="fomo-message" class="fomo"></p>
+      </section>
+
+      <section class="card">
+        <h2>Available Courses</h2>
+        <ul id="catalog-list" class="list"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Active Learning</h2>
+        <ul id="active-list" class="list"></ul>
+      </section>
+    </main>
+
+    <script type="module" src="js/guard.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
+  </body>
+</html>
