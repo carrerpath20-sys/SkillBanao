@@ -1,5 +1,6 @@
 import { enrollInCourse, consumeTimeForUnlock, completeModule } from "../backend/timeCreditService.js";
 import { syncCatalogFromBackend } from "./api.js";
+import { escapeHtml, safeNumber } from "./security.js";
 import { getState, setState } from "./state.js";
 
 const ui = {
@@ -14,30 +15,44 @@ const ui = {
 function render() {
   const state = getState();
 
-  ui.timeBalance.textContent = state.timeBalance;
-  ui.skillPoints.textContent = state.skillPoints;
+  ui.timeBalance.textContent = safeNumber(state.timeBalance, 0);
+  ui.skillPoints.textContent = safeNumber(state.skillPoints, 0);
   ui.activeCourses.textContent = state.activeCourses.length;
 
   ui.catalogList.innerHTML = state.catalog
-    .map(
-      (course) => `<li>
-        <strong>${course.title}</strong>
-        <p>${course.description}</p>
-        <p>${course.modules} modules • ${course.timeCost} credits • $${course.microPrice}</p>
-        <button class="btn secondary" data-enroll="${course.id}">Enroll with Time Credits</button>
-      </li>`
-    )
+    .map((course) => {
+      const title = escapeHtml(course.title);
+      const description = escapeHtml(course.description);
+      const modules = safeNumber(course.modules, 0);
+      const timeCost = safeNumber(course.timeCost, 0);
+      const microPrice = safeNumber(course.microPrice, 0);
+      const id = escapeHtml(course.id);
+
+      return `<li>
+        <strong>${title}</strong>
+        <p>${description}</p>
+        <p>${modules} modules • ${timeCost} credits • $${microPrice}</p>
+        <button class="btn secondary" data-enroll="${id}">Enroll with Time Credits</button>
+      </li>`;
+    })
     .join("");
 
   ui.activeList.innerHTML = state.activeCourses
-    .map(
-      (course) => `<li>
-        <strong>${course.title}</strong>
-        <p>Unlocked ${course.unlockedModules}/${course.modules} • Completed ${course.completedModules}/${course.modules}</p>
-        <p class="${course.nextUnlockInHours <= 12 ? "expiring" : ""}">Next module unlocks in ${course.nextUnlockInHours}h</p>
-        <button class="btn secondary" data-complete="${course.id}">Mark Module Complete</button>
-      </li>`
-    )
+    .map((course) => {
+      const title = escapeHtml(course.title);
+      const unlocked = safeNumber(course.unlockedModules, 0);
+      const completed = safeNumber(course.completedModules, 0);
+      const total = safeNumber(course.modules, 0);
+      const nextUnlockInHours = safeNumber(course.nextUnlockInHours, 0);
+      const id = escapeHtml(course.id);
+
+      return `<li>
+        <strong>${title}</strong>
+        <p>Unlocked ${unlocked}/${total} • Completed ${completed}/${total}</p>
+        <p class="${nextUnlockInHours <= 12 ? "expiring" : ""}">Next module unlocks in ${nextUnlockInHours}h</p>
+        <button class="btn secondary" data-complete="${id}">Mark Module Complete</button>
+      </li>`;
+    })
     .join("");
 
   ui.fomoMessage.textContent = state.activeCourses.length
@@ -47,7 +62,7 @@ function render() {
 
 document.querySelector("#buy-credits").addEventListener("click", () => {
   const state = getState();
-  state.timeBalance += 5;
+  state.timeBalance = safeNumber(state.timeBalance, 0) + 5;
   setState(state);
   ui.fomoMessage.textContent = "Micro-payment success in sandbox mode. +5 credits added.";
   render();
@@ -84,7 +99,7 @@ ui.activeList.addEventListener("click", (event) => {
 setInterval(() => {
   const state = getState();
   state.activeCourses.forEach((course) => {
-    course.nextUnlockInHours = Math.max(0, course.nextUnlockInHours - 1);
+    course.nextUnlockInHours = Math.max(0, safeNumber(course.nextUnlockInHours, 0) - 1);
   });
   setState(state);
   render();

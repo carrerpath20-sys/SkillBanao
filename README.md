@@ -18,13 +18,13 @@ This version follows a strict, professional flow:
 - Local fallback mode retained when backend config is missing.
 - Duplicate legacy auth entry removed.
 
-## Stage 3 ✅ (Google OAuth readiness hardening)
+## Stage 3 ✅ (Security + Production Readiness)
 
-- Google OAuth now validates runtime config before starting flow.
-- Added explicit env placeholders for Google OAuth values.
-- Security rule: **Never expose Google client secret in frontend code**.
-
-> Important: If a client secret was shared publicly, rotate it immediately from Google Cloud Console.
+- Added input/output hardening utilities (`js/security.js`) and sanitized dashboard rendering to reduce XSS risk.
+- Added stronger API validation for URLs and normalized auth emails.
+- Added Supabase session hydration (`hydrateSessionFromSupabase`) so login/guard can reuse existing backend sessions.
+- Added ready-to-run Supabase schema + RLS baseline in `supabase/schema.sql`.
+- Added GitHub Actions CI syntax checks in `.github/workflows/ci.yml`.
 
 ### Runtime config injection (frontend-safe values only)
 
@@ -43,10 +43,9 @@ Inject before scripts:
 - `googleClientId` can be exposed in frontend.
 - `googleClientSecret` must stay server-side only.
 
-### Recommended Supabase tables
+### Supabase setup files
 
-- `courses(id,title,description,module_count,time_cost,micro_price,video_url,is_active,created_at)`
-- `creator_verifications(user_id,full_name,cv_url,certificate_url,demo_video_url,status,created_at)`
+- Schema and policies: `supabase/schema.sql`
 
 ## Access Model
 

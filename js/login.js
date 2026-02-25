@@ -1,11 +1,16 @@
-import { isAuthenticated } from "./session.js";
+import { hydrateSessionFromSupabase, isAuthenticated } from "./session.js";
 import { loginWithPassword } from "./api.js";
 
-if (isAuthenticated()) {
-  window.location.href = "viewer-dashboard.html";
+const status = document.querySelector("#auth-status");
+
+async function checkExistingSession() {
+  await hydrateSessionFromSupabase();
+  if (isAuthenticated()) {
+    window.location.href = "viewer-dashboard.html";
+  }
 }
 
-const status = document.querySelector("#auth-status");
+checkExistingSession();
 
 document.querySelector("#login-form").addEventListener("submit", async (event) => {
   event.preventDefault();

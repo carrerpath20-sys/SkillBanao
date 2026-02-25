@@ -1,3 +1,5 @@
+import { getSupabaseClient } from "../backend/supabaseClient.js";
+
 const AUTH_KEY = "skillbanao-auth-v1";
 
 export function isAuthenticated() {
@@ -24,4 +26,26 @@ export function setAuthSession(payload) {
 
 export function clearAuthSession() {
   localStorage.removeItem(AUTH_KEY);
+}
+
+export async function hydrateSessionFromSupabase() {
+  const client = getSupabaseClient();
+  if (!client) {
+    return getAuthSession();
+  }
+
+  const { data, error } = await client.auth.getSession();
+  if (error || !data.session?.user) {
+    return getAuthSession();
+  }
+
+  const user = data.session.user;
+  setAuthSession({
+    username: user.email || "user",
+    provider: user.app_metadata?.provider || "password",
+    mode: "supabase",
+    userId: user.id
+  });
+
+  return getAuthSession();
 }

@@ -1,9 +1,23 @@
 import { getSupabaseClient, hasGoogleOauthConfig } from "../backend/supabaseClient.js";
 import { getAuthSession, setAuthSession } from "./session.js";
+import { safeNumber } from "./security.js";
 import { getState, setState } from "./state.js";
 
 function getClient() {
   return getSupabaseClient();
+}
+
+function normalizeEmail(email) {
+  return String(email || "").trim().toLowerCase();
+}
+
+function isValidUrl(url) {
+  try {
+    const parsed = new URL(String(url || ""));
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
 }
 
 export async function loginWithPassword(username, password) {
@@ -15,7 +29,7 @@ export async function loginWithPassword(username, password) {
   }
 
   const { data, error } = await client.auth.signInWithPassword({
-    email: username,
+    email: normalizeEmail(username),
     password
   });
 
@@ -40,10 +54,10 @@ export async function registerWithPassword(name, email, password) {
   }
 
   const { error } = await client.auth.signUp({
-    email,
+    email: normalizeEmail(email),
     password,
     options: {
-      data: { full_name: name }
+      data: { full_name: String(name || "").trim() }
     }
   });
 
@@ -110,9 +124,9 @@ export async function syncCatalogFromBackend() {
     id: course.id,
     title: course.title,
     description: course.description,
-    modules: Number(course.module_count || 0),
-    timeCost: Number(course.time_cost || 0),
-    microPrice: Number(course.micro_price || 0),
+    modules: safeNumber(course.module_count, 0),
+    timeCost: safeNumber(course.time_cost, 0),
+    microPrice: safeNumber(course.micro_price, 0),
     video: course.video_url || ""
   }));
   setState(state);
@@ -120,6 +134,11 @@ export async function syncCatalogFromBackend() {
 
 export async function publishCourseToBackend(course) {
   const client = getClient();
+
+  if (!isValidUrl(course.video)) {
+    return { ok: false, message: "Course video URL must be a valid http/https URL." };
+  }
+
   if (!client) {
     return { ok: true, mode: "local" };
   }
@@ -127,11 +146,11 @@ export async function publishCourseToBackend(course) {
   const session = getAuthSession();
   const payload = {
     creator_id: session?.userId || null,
-    title: course.title,
-    description: course.description,
-    module_count: course.modules,
-    time_cost: course.timeCost,
-    micro_price: course.microPrice,
+    title: String(course.title || "").trim(),
+    description: String(course.description || "").trim(),
+    module_count: safeNumber(course.modules, 0),
+    time_cost: safeNumber(course.timeCost, 0),
+    micro_price: safeNumber(course.microPrice, 0),
     video_url: course.video,
     is_active: true
   };
@@ -146,6 +165,12 @@ export async function publishCourseToBackend(course) {
 
 export async function submitVerificationToBackend(record) {
   const client = getClient();
+
+  const urls = [record.cv, record.certificate, record.demoVideo];
+  if (!urls.every(isValidUrl)) {
+    return { ok: false, message: "CV, certificate and demo video must be valid URLs." };
+  }
+
   if (!client) {
     return { ok: true, mode: "local" };
   }
@@ -153,7 +178,7 @@ export async function submitVerificationToBackend(record) {
   const session = getAuthSession();
   const { error } = await client.from("creator_verifications").insert({
     user_id: session?.userId || null,
-    full_name: record.name,
+    full_name: String(record.name || "").trim(),
     cv_url: record.cv,
     certificate_url: record.certificate,
     demo_video_url: record.demoVideo,
