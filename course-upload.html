@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Upload | SkillBanao</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-protected="true">
+    <header class="site-header">
+      <a class="brand" href="index.html">SkillBanao</a>
+      <nav>
+        <a href="creator-verification.html">Verification</a>
+        <a href="course-upload.html" class="active">Course Upload</a>
+        <a href="viewer-dashboard.html">Dashboard</a>
+        <a href="#" id="logout-btn">Logout</a>
+      </nav>
+    </header>
+
+    <main class="container narrow">
+      <section class="card">
+        <h1>Publish Course</h1>
+        <p>Define module structure, time-credit access, and low-cost micro-payment option.</p>
+        <form id="course-form" class="form-grid">
+          <label>Course Title <input required name="title" type="text" /></label>
+          <label>Description <textarea required name="description" rows="3"></textarea></label>
+          <label>Modules <input required name="modules" min="2" max="20" value="5" type="number" /></label>
+          <label>Time Cost (credits) <input required name="timeCost" min="1" value="8" type="number" /></label>
+          <label>Micro Price (USD) <input required name="price" min="1" step="0.5" value="2.5" type="number" /></label>
+          <label>Video URL <input required name="video" type="url" /></label>
+          <button class="btn primary" type="submit">Publish Course</button>
+        </form>
+        <p class="status" id="course-status"></p>
+      </section>
+    </main>
+
+    <script type="module" src="js/guard.js"></script>
+    <script type="module" src="js/upload.js"></script>
+  </body>
+</html>
