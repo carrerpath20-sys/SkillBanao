@@ -9,15 +9,21 @@ const ui = {
   activeCourses: document.querySelector("#active-courses"),
   fomoMessage: document.querySelector("#fomo-message"),
   catalogList: document.querySelector("#catalog-list"),
-  activeList: document.querySelector("#active-list")
+  activeList: document.querySelector("#active-list"),
+  buyCreditsBtn: document.querySelector("#buy-credits"),
+  useTimeBtn: document.querySelector("#use-time")
 };
 
 function render() {
+  if (!ui.catalogList || !ui.activeList) {
+    return;
+  }
+
   const state = getState();
 
-  ui.timeBalance.textContent = safeNumber(state.timeBalance, 0);
-  ui.skillPoints.textContent = safeNumber(state.skillPoints, 0);
-  ui.activeCourses.textContent = state.activeCourses.length;
+  if (ui.timeBalance) ui.timeBalance.textContent = safeNumber(state.timeBalance, 0);
+  if (ui.skillPoints) ui.skillPoints.textContent = safeNumber(state.skillPoints, 0);
+  if (ui.activeCourses) ui.activeCourses.textContent = state.activeCourses.length;
 
   ui.catalogList.innerHTML = state.catalog
     .map((course) => {
@@ -55,44 +61,54 @@ function render() {
     })
     .join("");
 
-  ui.fomoMessage.textContent = state.activeCourses.length
-    ? "⏳ Next module unlocks tomorrow — spend credits now to maintain streak momentum."
-    : "Start a course to activate your learning streak.";
+  if (ui.fomoMessage) {
+    ui.fomoMessage.textContent = state.activeCourses.length
+      ? "⏳ Next module unlocks tomorrow — spend credits now to maintain streak momentum."
+      : "Start a course to activate your learning streak.";
+  }
 }
 
-document.querySelector("#buy-credits").addEventListener("click", () => {
+ui.buyCreditsBtn?.addEventListener("click", () => {
   const state = getState();
   state.timeBalance = safeNumber(state.timeBalance, 0) + 5;
   setState(state);
-  ui.fomoMessage.textContent = "Micro-payment success in sandbox mode. +5 credits added.";
+  if (ui.fomoMessage) {
+    ui.fomoMessage.textContent = "Micro-payment success in sandbox mode. +5 credits added.";
+  }
   render();
 });
 
-document.querySelector("#use-time").addEventListener("click", () => {
+ui.useTimeBtn?.addEventListener("click", () => {
   const state = getState();
   const result = consumeTimeForUnlock(state, 2);
   setState(state);
-  ui.fomoMessage.textContent = result.message;
+  if (ui.fomoMessage) {
+    ui.fomoMessage.textContent = result.message;
+  }
   render();
 });
 
-ui.catalogList.addEventListener("click", (event) => {
+ui.catalogList?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-enroll]");
   if (!button) return;
   const state = getState();
   const result = enrollInCourse(state, button.dataset.enroll);
   setState(state);
-  ui.fomoMessage.textContent = result.message;
+  if (ui.fomoMessage) {
+    ui.fomoMessage.textContent = result.message;
+  }
   render();
 });
 
-ui.activeList.addEventListener("click", (event) => {
+ui.activeList?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-complete]");
   if (!button) return;
   const state = getState();
   const result = completeModule(state, button.dataset.complete);
   setState(state);
-  ui.fomoMessage.textContent = result.message;
+  if (ui.fomoMessage) {
+    ui.fomoMessage.textContent = result.message;
+  }
   render();
 });
 

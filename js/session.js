@@ -28,6 +28,14 @@ export function clearAuthSession() {
   localStorage.removeItem(AUTH_KEY);
 }
 
+export async function signOutSession() {
+  const client = getSupabaseClient();
+  if (client) {
+    await client.auth.signOut();
+  }
+  clearAuthSession();
+}
+
 export async function hydrateSessionFromSupabase() {
   const client = getSupabaseClient();
   if (!client) {
@@ -35,11 +43,20 @@ export async function hydrateSessionFromSupabase() {
   }
 
   const { data, error } = await client.auth.getSession();
-  if (error || !data.session?.user) {
+  if (error) {
     return getAuthSession();
   }
 
-  const user = data.session.user;
+  const user = data.session?.user;
+  if (!user) {
+    const local = getAuthSession();
+    if (local?.mode === "supabase") {
+      clearAuthSession();
+      return null;
+    }
+    return local;
+  }
+
   setAuthSession({
     username: user.email || "user",
     provider: user.app_metadata?.provider || "password",

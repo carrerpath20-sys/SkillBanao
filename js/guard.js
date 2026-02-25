@@ -1,4 +1,4 @@
-import { clearAuthSession, hydrateSessionFromSupabase, isAuthenticated } from "./session.js";
+import { hydrateSessionFromSupabase, isAuthenticated, signOutSession } from "./session.js";
 
 async function enforceProtection() {
   await hydrateSessionFromSupabase();
@@ -10,9 +10,9 @@ async function enforceProtection() {
 
   const logoutBtn = document.querySelector("#logout-btn");
   if (logoutBtn) {
-    logoutBtn.addEventListener("click", (event) => {
+    logoutBtn.addEventListener("click", async (event) => {
       event.preventDefault();
-      clearAuthSession();
+      await signOutSession();
       window.location.href = "login.html";
     });
   }

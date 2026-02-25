@@ -4,6 +4,9 @@ const defaultConfig = {
   googleClientId: ""
 };
 
+let warnedConfigMissing = false;
+let warnedSdkMissing = false;
+
 function resolveRuntimeConfig() {
   const injected = window.__SKILLBANAO_CONFIG__ || {};
 
@@ -19,22 +22,27 @@ export function getSupabaseConfig() {
 }
 
 export function hasGoogleOauthConfig() {
-  const config = resolveRuntimeConfig();
-  return Boolean(config.googleClientId);
+  return Boolean(resolveRuntimeConfig().googleClientId);
 }
 
 export function getSupabaseClient() {
   const config = resolveRuntimeConfig();
 
   if (!config.url || !config.anonKey) {
-    console.warn(
-      "Supabase config missing. Inject window.__SKILLBANAO_CONFIG__ with supabaseUrl and supabaseAnonKey."
-    );
+    if (!warnedConfigMissing) {
+      console.warn(
+        "Supabase config missing. Inject window.__SKILLBANAO_CONFIG__ with supabaseUrl and supabaseAnonKey."
+      );
+      warnedConfigMissing = true;
+    }
     return null;
   }
 
   if (!window.supabase) {
-    console.warn("Supabase script not detected. Load @supabase/supabase-js via CDN first.");
+    if (!warnedSdkMissing) {
+      console.warn("Supabase script not detected. Load @supabase/supabase-js via CDN first.");
+      warnedSdkMissing = true;
+    }
     return null;
   }
 

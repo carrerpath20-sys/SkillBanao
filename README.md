@@ -18,13 +18,27 @@ This version follows a strict, professional flow:
 - Local fallback mode retained when backend config is missing.
 - Duplicate legacy auth entry removed.
 
-## Stage 3 ✅ (Security + Production Readiness)
+## Stage 3 ✅ (Conflict Resolution + Security + Prod Readiness)
 
-- Added input/output hardening utilities (`js/security.js`) and sanitized dashboard rendering to reduce XSS risk.
-- Added stronger API validation for URLs and normalized auth emails.
-- Added Supabase session hydration (`hydrateSessionFromSupabase`) so login/guard can reuse existing backend sessions.
-- Added ready-to-run Supabase schema + RLS baseline in `supabase/schema.sql`.
-- Added GitHub Actions CI syntax checks in `.github/workflows/ci.yml`.
+The main integration-conflict files were normalized:
+
+- `README.md`
+- `backend/supabaseClient.js`
+- `js/creator.js`
+- `js/dashboard.js`
+- `js/guard.js`
+- `js/login.js`
+- `js/register.js`
+- `js/session.js`
+- `js/upload.js`
+
+What was resolved:
+
+- Unified session flow between local fallback and Supabase session hydration.
+- Unified logout path (`signOutSession`) with Supabase-aware sign-out.
+- Unified auth/register handlers with null-safe DOM bindings.
+- Unified validation/sanitization behavior in upload, verification, and dashboard rendering.
+- Reduced console warning noise in Supabase client with one-time warnings.
 
 ### Runtime config injection (frontend-safe values only)
 
