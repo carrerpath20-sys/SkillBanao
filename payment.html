@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Sandbox | SkillBanao</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-protected="true">
+    <header class="site-header">
+      <a class="brand" href="index.html">SkillBanao</a>
+      <nav>
+        <a href="viewer-dashboard.html">Dashboard</a>
+        <a href="payment.html" class="active">Payments</a>
+        <a href="#" id="logout-btn">Logout</a>
+      </nav>
+    </header>
+
+    <main class="container narrow">
+      <section class="card">
+        <h1>Micro-payment Integration</h1>
+        <p>Start with sandbox mode. Then connect secure webhooks for real unlock transactions.</p>
+        <div class="pill-row">
+          <span class="pill">Stripe Test Checkout</span>
+          <span class="pill">Razorpay Sandbox Order</span>
+          <span class="pill">Webhook Verification</span>
+        </div>
+        <ol>
+          <li>Create test product/price/order at provider dashboard.</li>
+          <li>Generate checkout intent from server endpoint.</li>
+          <li>On payment success, add transaction and unlock limited modules.</li>
+          <li>Sync credit deltas to user profile timeline.</li>
+        </ol>
+      </section>
+    </main>
+
+    <script type="module" src="js/guard.js"></script>
+  </body>
+</html>

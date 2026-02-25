@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | SkillBanao</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="premium-bg">
+    <header class="site-header">
+      <a class="brand" href="index.html">SkillBanao</a>
+      <nav>
+        <a href="login.html">Login</a>
+        <a href="explore.html">Explore</a>
+      </nav>
+    </header>
+
+    <main class="container narrow">
+      <section class="card">
+        <h1>Register</h1>
+        <p>Register করুন, তারপর login করে full features unlock করুন.</p>
+        <form id="register-form" class="form-grid">
+          <label>Full Name <input type="text" name="name" required /></label>
+          <label>Email <input type="email" name="email" required /></label>
+          <label>Password <input type="password" name="password" required /></label>
+          <button class="btn primary" type="submit">Create Account</button>
+          <button type="button" class="btn google" id="google-login">Login with Google</button>
+        </form>
+        <p id="auth-status" class="status"></p>
+      </section>
+    </main>
+
+    <script type="module" src="js/register.js"></script>
+  </body>
+</html>
