@@ -1,4 +1,4 @@
-import { getSupabaseClient } from "../backend/supabaseClient.js";
+import { getSupabaseClient, hasGoogleOauthConfig } from "../backend/supabaseClient.js";
 import { getAuthSession, setAuthSession } from "./session.js";
 import { getState, setState } from "./state.js";
 
@@ -65,6 +65,13 @@ export async function loginWithGoogle() {
     return {
       ok: false,
       message: "Google login placeholder active. Add runtime Supabase config + OAuth credentials first."
+    };
+  }
+
+  if (!hasGoogleOauthConfig()) {
+    return {
+      ok: false,
+      message: "Missing googleClientId in runtime config. Add it before starting Google OAuth."
     };
   }
 

@@ -1,6 +1,7 @@
 const defaultConfig = {
   url: "",
-  anonKey: ""
+  anonKey: "",
+  googleClientId: ""
 };
 
 function resolveRuntimeConfig() {
@@ -8,12 +9,18 @@ function resolveRuntimeConfig() {
 
   return {
     url: injected.supabaseUrl || defaultConfig.url,
-    anonKey: injected.supabaseAnonKey || defaultConfig.anonKey
+    anonKey: injected.supabaseAnonKey || defaultConfig.anonKey,
+    googleClientId: injected.googleClientId || defaultConfig.googleClientId
   };
 }
 
 export function getSupabaseConfig() {
   return resolveRuntimeConfig();
+}
+
+export function hasGoogleOauthConfig() {
+  const config = resolveRuntimeConfig();
+  return Boolean(config.googleClientId);
 }
 
 export function getSupabaseClient() {

@@ -14,30 +14,36 @@ This version follows a strict, professional flow:
 
 ## Stage 2 ✅ (Backend-ready Auth + Data Wiring)
 
-Stage 2 starts backend integration without breaking local fallback mode:
+- Central API layer in `js/api.js` for auth/data operations.
+- Local fallback mode retained when backend config is missing.
+- Duplicate legacy auth entry removed.
 
-- New `js/api.js` service layer:
-  - password login/register (Supabase if configured; local fallback otherwise)
-  - Google OAuth start (Supabase OAuth flow)
-  - course catalog sync from Supabase
-  - course publish + creator verification submission to Supabase
-- `js/login.js`, `js/register.js`, `js/upload.js`, `js/creator.js`, `js/dashboard.js` now use the API layer
-- duplicated legacy `js/auth.js` removed to avoid split auth logic
+## Stage 3 ✅ (Google OAuth readiness hardening)
 
-### Runtime config injection
+- Google OAuth now validates runtime config before starting flow.
+- Added explicit env placeholders for Google OAuth values.
+- Security rule: **Never expose Google client secret in frontend code**.
 
-Inject before scripts (or in a shared head include):
+> Important: If a client secret was shared publicly, rotate it immediately from Google Cloud Console.
+
+### Runtime config injection (frontend-safe values only)
+
+Inject before scripts:
 
 ```html
 <script>
   window.__SKILLBANAO_CONFIG__ = {
     supabaseUrl: "https://YOUR_PROJECT.supabase.co",
-    supabaseAnonKey: "YOUR_SUPABASE_ANON_KEY"
+    supabaseAnonKey: "YOUR_SUPABASE_ANON_KEY",
+    googleClientId: "YOUR_GOOGLE_CLIENT_ID"
   };
 </script>
 ```
 
-### Recommended Supabase tables for Stage 2
+- `googleClientId` can be exposed in frontend.
+- `googleClientSecret` must stay server-side only.
+
+### Recommended Supabase tables
 
 - `courses(id,title,description,module_count,time_cost,micro_price,video_url,is_active,created_at)`
 - `creator_verifications(user_id,full_name,cv_url,certificate_url,demo_video_url,status,created_at)`
